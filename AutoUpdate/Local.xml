@@ -1,0 +1,5 @@
+﻿<LocalUpdate>
+  <LocalVersion>1.0.0.0</LocalVersion>
+  <LocalIgnoreVersion>1.0.0.0</LocalIgnoreVersion>
+  <ServerUpdateUrl>http://47.122.1.39:8080/server.xml</ServerUpdateUrl>
+</LocalUpdate>
