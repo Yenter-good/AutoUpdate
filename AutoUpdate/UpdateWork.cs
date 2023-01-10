@@ -99,7 +99,7 @@ namespace MAutoUpdate
                 RemoteInfo remote = new RemoteInfo();
                 foreach (XmlNode pItem in item.ChildNodes)
                 {
-                    remote.GetType().GetProperty(pItem.Name).SetValue(remote, pItem.InnerText, null);
+                    remote.GetType().GetProperty(pItem.Name)?.SetValue(remote, pItem.InnerText, null);
                 }
                 list.Add(remote);
             }
