@@ -31,6 +31,7 @@
             this.updateBar = new System.Windows.Forms.ProgressBar();
             this.LBTitle = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
+            this.lblContent = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // updateBar
@@ -65,17 +66,27 @@
             this.label1.Text = "正在升级...";
             this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
+            // lblContent
+            // 
+            this.lblContent.Font = new System.Drawing.Font("微软雅黑", 11F);
+            this.lblContent.ForeColor = System.Drawing.Color.DimGray;
+            this.lblContent.Location = new System.Drawing.Point(115, 59);
+            this.lblContent.Name = "lblContent";
+            this.lblContent.Size = new System.Drawing.Size(358, 159);
+            this.lblContent.TabIndex = 27;
+            // 
             // UpdateForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(588, 428);
+            this.Controls.Add(this.lblContent);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.LBTitle);
             this.Controls.Add(this.updateBar);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Name = "UpdateForm";
-            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "UpdateForm";
             this.Load += new System.EventHandler(this.UpdateForm_Load);
             this.ResumeLayout(false);
@@ -88,5 +99,6 @@
         private System.Windows.Forms.ProgressBar updateBar;
         private System.Windows.Forms.Label LBTitle;
         private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label lblContent;
     }
 }

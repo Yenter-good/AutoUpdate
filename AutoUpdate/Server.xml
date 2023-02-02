@@ -6,5 +6,7 @@
 		<ReleaseVersion>1.1.0.0</ReleaseVersion>
 		<VersionDesc>http://localhost/更新说明.txt</VersionDesc>
 		<UpdateMode>Increment</UpdateMode>
+		<ForceFlag>0</ForceFlag>
+		<DirectUpdate>0</DirectUpdate>
 	</item>
 </ServerUpdate>

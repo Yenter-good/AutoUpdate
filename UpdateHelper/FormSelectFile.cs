@@ -72,7 +72,7 @@ namespace UpdateHelper
                 if (form.ShowDialog() == DialogResult.OK)
                 {
                     this.MoveOldFile();
-                    this.CreateNewFile(form.ReleaseVersion, form.VersionDesc, form.ForceFlag);
+                    this.CreateNewFile(form.ReleaseVersion, form.VersionDesc, form.ForceFlag, form.DirectUpdate);
                 }
                 this.Show();
             }
@@ -108,17 +108,17 @@ namespace UpdateHelper
             }
         }
 
-        private void CreateNewFile(string version, string desc, string forceFlag)
+        private void CreateNewFile(string version, string desc, string forceFlag, string directUpdate)
         {
             File.Move(_selectedFileName, Path.Combine(_workDir, "最新版本.zip"));
             File.WriteAllText(Path.Combine(_workDir, "最新版本更新说明.txt"), desc, Encoding.Default);
 
-            var xml = this.SetServer(version, desc, forceFlag);
+            var xml = this.SetServer(version, desc, forceFlag, directUpdate);
 
             File.WriteAllText(Path.Combine(_workDir, "Server.xml"), xml);
         }
 
-        private string SetServer(string version, string desc, string forceFlag)
+        private string SetServer(string version, string desc, string forceFlag, string directUpdate)
         {
             XmlDocument xdoc = new XmlDocument();
             xdoc.Load(System.IO.Path.Combine(_workDir, "Server.xml"));
@@ -129,6 +129,7 @@ namespace UpdateHelper
 
             node.SelectSingleNode("ReleaseVersion").InnerText = version;
             node.SelectSingleNode("ForceFlag").InnerText = forceFlag;
+            node.SelectSingleNode("DirectUpdate").InnerText = directUpdate;
 
             return xdoc.OuterXml;
         }

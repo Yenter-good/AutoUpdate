@@ -25,6 +25,7 @@ namespace UpdateHelper
         }
 
         public string ForceFlag { get; set; }
+        public string DirectUpdate { get; set; }
         public string ReleaseVersion { get; set; }
         public string VersionDesc { get; set; }
 
@@ -45,6 +46,7 @@ namespace UpdateHelper
 
             this.textBox1.Text = System.IO.File.ReadAllText(_descriptionFileName, System.Text.Encoding.Default);
             this.checkBox1.Checked = info.ForceFlag != "0";
+            this.checkBox2.Checked = info.DirectUpdate != "0";
         }
 
         /// <summary>
@@ -93,6 +95,7 @@ namespace UpdateHelper
 
             this.ReleaseVersion = version;
             this.ForceFlag = this.checkBox1.Checked ? "1" : "0";
+            this.DirectUpdate = this.checkBox2.Checked ? "1" : "0";
             this.VersionDesc = this.textBox1.Text;
 
             this.DialogResult = DialogResult.OK;

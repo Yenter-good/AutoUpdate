@@ -12,6 +12,7 @@ using System.Xml;
 using Ionic.Zip;
 using System.Net.Security;
 using System.Security.Cryptography.X509Certificates;
+using System.Threading.Tasks;
 
 namespace MAutoUpdate
 {
@@ -19,12 +20,19 @@ namespace MAutoUpdate
     {
         public delegate void UpdateProgess(double data);
         public UpdateProgess OnUpdateProgess;
+
+        public event EventHandler UpdateCompleted;
+
+        public delegate void UpdateStateChanged(string data);
+        public UpdateStateChanged OnUpdateStateChanged;
+
         string mainName;
         //临时目录（WIN7以及以上在C盘只有对于temp目录有操作权限）
-        string tempPath = Path.Combine(Environment.GetEnvironmentVariable("TEMP"), @"MAutoUpdate\temp\");
+        string tempPath = Path.Combine(Environment.GetEnvironmentVariable("TEMP"), $@"MAutoUpdate\temp\");
         string bakPath = Path.Combine(Environment.GetEnvironmentVariable("TEMP"), @"MAutoUpdate\bak\");
 
         LocalInfo localInfo;
+
         public List<RemoteInfo> UpdateVerList { get; set; }
         public string programName { get; set; }
         public string subKey { get; set; }
@@ -57,19 +65,13 @@ namespace MAutoUpdate
         public bool Do()
         {
             KillProcessExist();
-            Thread.Sleep(400);
+            //Thread.Sleep(400);
             //更新之前先备份
-            Bak();
-            Thread.Sleep(400);
+            //Bak();
+            //Thread.Sleep(400);
             //备份结束开始下载东西
             DownLoad();//下载更新包文件信息
-            Thread.Sleep(400);
-            //3、开始更新
-            Update();
-            Thread.Sleep(400);
 
-            Start();
-            Thread.Sleep(400);
             return true;
         }
 
@@ -116,20 +118,22 @@ namespace MAutoUpdate
         /// <summary>
         /// 下载方法
         /// </summary>
-        private UpdateWork DownLoad()
+        private void DownLoad()
         {
             //比如uri=http://localhost/Rabom/1.rar;iis就需要自己配置了。
             //截取文件名
             //构造文件完全限定名,准备将网络流下载为本地文件
+            OnUpdateStateChanged?.Invoke("正在下载...");
             using (WebClient web = new WebClient())
             {
+                web.DownloadProgressChanged += Web_DownloadProgressChanged;
+                web.DownloadFileCompleted += Web_DownloadFileCompleted;
                 foreach (var item in UpdateVerList)
                 {
                     try
                     {
                         //LogTool.AddLog("更新程序：下载更新包文件" + item.ReleaseVersion);
-                        web.DownloadFile(item.ReleaseUrl, tempPath + item.ReleaseVersion + ".zip");
-                        OnUpdateProgess?.Invoke(60 / UpdateVerList.Count);
+                        web.DownloadFileAsync(new Uri(item.ReleaseUrl), tempPath + item.ReleaseVersion + ".zip");
                     }
                     catch (Exception ex)
                     {
@@ -137,8 +141,24 @@ namespace MAutoUpdate
                         throw ex;
                     }
                 }
-                return this;
             }
+        }
+
+        private void Web_DownloadFileCompleted(object sender, System.ComponentModel.AsyncCompletedEventArgs e)
+        {
+            //3、开始更新
+            Update();
+            Thread.Sleep(400);
+
+            Start();
+            Thread.Sleep(400);
+
+            UpdateCompleted?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void Web_DownloadProgressChanged(object sender, DownloadProgressChangedEventArgs e)
+        {
+            OnUpdateProgess?.Invoke(80 * (e.ProgressPercentage * 1.0 / 100));
         }
 
 
@@ -182,6 +202,7 @@ namespace MAutoUpdate
 
         private UpdateWork Update()
         {
+            OnUpdateStateChanged?.Invoke("正在升级...");
             foreach (var item in UpdateVerList)
             {
                 try
@@ -192,7 +213,7 @@ namespace MAutoUpdate
                         DelLocal();
                     }
                     string path = tempPath + item.ReleaseVersion + ".zip";
-                    using (ZipFile zip = new ZipFile(path))
+                    using (ZipFile zip = new ZipFile(path, Encoding.GetEncoding("GBK")))
                     {
                         //LogTool.AddLog("更新程序：解压" + item.ReleaseVersion + ".zip");
                         zip.ExtractAll(AppDomain.CurrentDomain.BaseDirectory, ExtractExistingFileAction.OverwriteSilently);
@@ -201,12 +222,13 @@ namespace MAutoUpdate
                     }
                     localInfo.LocalVersion = item.ReleaseVersion;
                     localInfo.SaveXml();
+                    Application.DoEvents();
                 }
                 catch (Exception ex)
                 {
                     //LogTool.AddLog("更新程序出现异常：异常信息：" + ex.Message);
                     //LogTool.AddLog("更新程序：更新失败，进行回滚操作");
-                    Restore();
+                    //Restore();
                     break;
                 }
                 finally
@@ -223,13 +245,20 @@ namespace MAutoUpdate
 
         private UpdateWork Start()
         {
+            OnUpdateStateChanged?.Invoke("正在启动...");
             String[] StartInfo = UpdateVerList[UpdateVerList.Count - 1].ApplicationStart.Split(',');
             if (StartInfo.Length > 0)
             {
-                foreach (var item in StartInfo)
+                try
                 {
-                    //LogTool.AddLog("更新程序：启动" + item);
-                    Process.Start(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, item));
+                    foreach (var item in StartInfo)
+                    {
+                        //LogTool.AddLog("更新程序：启动" + item);
+                        Process.Start(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, item));
+                    }
+                }
+                catch
+                {
                 }
             }
             OnUpdateProgess?.Invoke(100);

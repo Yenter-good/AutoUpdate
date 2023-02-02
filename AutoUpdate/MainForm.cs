@@ -24,15 +24,8 @@ namespace MAutoUpdate
             InitializeComponent();
             updateWork = _updateWork;
             var work = _updateWork.UpdateVerList[_updateWork.UpdateVerList.Count - 1];
-            var res = work.VersionDesc;
+            var res = work.GetVersionDesc();
 
-            var temp = WebRequest.Create(res);
-            var stream = temp.GetResponse().GetResponseStream();
-            using (StreamReader reader = new StreamReader(stream, System.Text.Encoding.Default))
-            {
-                string text = reader.ReadToEnd();
-                this.lblContent.Text = text;
-            }
             if (work.ForceFlag != "0")
             {
                 this.btnIgnore.Enabled = false;

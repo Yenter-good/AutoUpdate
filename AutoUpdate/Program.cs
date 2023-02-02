@@ -6,6 +6,7 @@ using System.Net;
 using System.Diagnostics;
 using System.Threading;
 using System.Xml;
+using System.Linq;
 
 namespace MAutoUpdate
 {
@@ -15,6 +16,7 @@ namespace MAutoUpdate
         static Process pCurrent = Process.GetCurrentProcess();
         static Mutex m = new Mutex(true, pCurrent.MainModule.FileName.Replace(":", "").Replace(@"\", "") + "MAutoUpdate", out f);//互斥，
 
+        static bool _updateCompleted = false;
         /// <summary>
         /// 程序主入口
         /// </summary>
@@ -49,7 +51,16 @@ namespace MAutoUpdate
                             {
                                 if (silentUpdate == "1")
                                 {
+                                    updateWork.UpdateCompleted += UpdateWork_UpdateCompleted;
                                     updateWork.Do();
+                                    while (!_updateCompleted)
+                                    { }
+                                }
+                                else if (updateWork.UpdateVerList.LastOrDefault()?.DirectUpdate.Trim() == "1")
+                                {
+                                    var form = new UpdateForm(updateWork);
+                                    form.ShowVersionDesc = true;
+                                    form.ShowDialog();
                                 }
                                 else
                                 {
@@ -80,7 +91,16 @@ namespace MAutoUpdate
                                 {
                                     if (silentUpdate == "1")
                                     {
+                                        updateWork.UpdateCompleted += UpdateWork_UpdateCompleted;
                                         updateWork.Do();
+                                        while (!_updateCompleted)
+                                        { }
+                                    }
+                                    else if (updateWork.UpdateVerList.LastOrDefault()?.DirectUpdate.Trim() == "1")
+                                    {
+                                        var form = new UpdateForm(updateWork);
+                                        form.ShowVersionDesc = true;
+                                        form.ShowDialog();
                                     }
                                     else
                                     {
@@ -97,6 +117,11 @@ namespace MAutoUpdate
                 {
                 }
             }
+        }
+
+        private static void UpdateWork_UpdateCompleted(object sender, EventArgs e)
+        {
+            _updateCompleted = true;
         }
     }
 }
