@@ -5,7 +5,6 @@ using System.IO;
 using System.Net;
 using System.Diagnostics;
 using System.Threading;
-using System.Xml;
 using System.Linq;
 
 namespace MAutoUpdate
@@ -16,7 +15,6 @@ namespace MAutoUpdate
         static Process pCurrent = Process.GetCurrentProcess();
         static Mutex m = new Mutex(true, pCurrent.MainModule.FileName.Replace(":", "").Replace(@"\", "") + "MAutoUpdate", out f);//互斥，
 
-        static bool _updateCompleted = false;
         /// <summary>
         /// 程序主入口
         /// </summary>
@@ -36,7 +34,7 @@ namespace MAutoUpdate
                     if (string.IsNullOrEmpty(programName) == false)
                     {
                         UpdateWork updateWork = new UpdateWork(programName, localAddress, isClickUpdate);
-                        if (updateWork.UpdateVerList.Count > 0)
+                        if (updateWork.UpdateVerList != null && updateWork.UpdateVerList.Any())
                         {
                             /* 当前用户是管理员的时候，直接启动应用程序 
                              * 如果不是管理员，则使用启动对象启动程序，以确保使用管理员身份运行 
@@ -51,10 +49,7 @@ namespace MAutoUpdate
                             {
                                 if (silentUpdate == "1")
                                 {
-                                    updateWork.UpdateCompleted += UpdateWork_UpdateCompleted;
                                     updateWork.Do();
-                                    while (!_updateCompleted)
-                                    { }
                                 }
                                 else if (updateWork.UpdateVerList.LastOrDefault()?.DirectUpdate.Trim() == "1")
                                 {
@@ -91,10 +86,7 @@ namespace MAutoUpdate
                                 {
                                     if (silentUpdate == "1")
                                     {
-                                        updateWork.UpdateCompleted += UpdateWork_UpdateCompleted;
                                         updateWork.Do();
-                                        while (!_updateCompleted)
-                                        { }
                                     }
                                     else if (updateWork.UpdateVerList.LastOrDefault()?.DirectUpdate.Trim() == "1")
                                     {
@@ -119,9 +111,6 @@ namespace MAutoUpdate
             }
         }
 
-        private static void UpdateWork_UpdateCompleted(object sender, EventArgs e)
-        {
-            _updateCompleted = true;
-        }
+       
     }
 }

@@ -7,12 +7,12 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.IO.Compression;
+using System.Linq;
 using System.Net;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
-using System.Xml;
 
 namespace MAutoUpdate
 {
@@ -23,8 +23,11 @@ namespace MAutoUpdate
         {
             InitializeComponent();
             updateWork = _updateWork;
-            var work = _updateWork.UpdateVerList[_updateWork.UpdateVerList.Count - 1];
-            var res = work.GetVersionDesc();
+            var work = _updateWork.UpdateVerList.LastOrDefault();
+            List<string> content = new List<string>();
+            foreach (var version in _updateWork.UpdateVerList)
+                content.Add($"v{version.ReleaseVersion}版本：\r\n{version.GetVersionDesc()}");
+            this.hideCursorRichTextBox1.Text = string.Join("\r\n\r\n", content);
 
             if (work.ForceFlag != "0")
             {

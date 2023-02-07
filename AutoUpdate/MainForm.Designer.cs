@@ -32,10 +32,10 @@ namespace MAutoUpdate
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.LBTitle = new System.Windows.Forms.Label();
+            this.hideCursorRichTextBox1 = new MAutoUpdate.HideCursorRichTextBox();
             this.btnUpdateNow = new MAutoUpdate.Control.YButton();
             this.btnUpdateLater = new MAutoUpdate.Control.YButton();
             this.btnIgnore = new MAutoUpdate.Control.YButton();
-            this.lblContent = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // LBTitle
@@ -49,6 +49,18 @@ namespace MAutoUpdate
             this.LBTitle.Size = new System.Drawing.Size(54, 19);
             this.LBTitle.TabIndex = 22;
             this.LBTitle.Text = "新版本";
+            // 
+            // hideCursorRichTextBox1
+            // 
+            this.hideCursorRichTextBox1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
+            this.hideCursorRichTextBox1.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.hideCursorRichTextBox1.Font = new System.Drawing.Font("宋体", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.hideCursorRichTextBox1.Location = new System.Drawing.Point(114, 77);
+            this.hideCursorRichTextBox1.Name = "hideCursorRichTextBox1";
+            this.hideCursorRichTextBox1.ReadOnly = true;
+            this.hideCursorRichTextBox1.Size = new System.Drawing.Size(373, 197);
+            this.hideCursorRichTextBox1.TabIndex = 29;
+            this.hideCursorRichTextBox1.Text = "";
             // 
             // btnUpdateNow
             // 
@@ -110,15 +122,6 @@ namespace MAutoUpdate
             this.btnIgnore.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.btnIgnore.Click += new System.EventHandler(this.btnIgnore_Click);
             // 
-            // lblContent
-            // 
-            this.lblContent.Font = new System.Drawing.Font("微软雅黑", 11F);
-            this.lblContent.ForeColor = System.Drawing.Color.DimGray;
-            this.lblContent.Location = new System.Drawing.Point(112, 103);
-            this.lblContent.Name = "lblContent";
-            this.lblContent.Size = new System.Drawing.Size(358, 159);
-            this.lblContent.TabIndex = 24;
-            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -126,10 +129,10 @@ namespace MAutoUpdate
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
             this.ClientSize = new System.Drawing.Size(600, 420);
+            this.Controls.Add(this.hideCursorRichTextBox1);
             this.Controls.Add(this.btnUpdateNow);
             this.Controls.Add(this.btnUpdateLater);
             this.Controls.Add(this.btnIgnore);
-            this.Controls.Add(this.lblContent);
             this.Controls.Add(this.LBTitle);
             this.DoubleBuffered = true;
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
@@ -149,6 +152,6 @@ namespace MAutoUpdate
         private YButton btnIgnore;
         private YButton btnUpdateLater;
         private YButton btnUpdateNow;
-        private System.Windows.Forms.Label lblContent;
+        private HideCursorRichTextBox hideCursorRichTextBox1;
     }
 }

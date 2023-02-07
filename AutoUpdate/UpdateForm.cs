@@ -15,6 +15,7 @@ namespace MAutoUpdate
     {
         public delegate void UpdateUI(int step);//声明一个更新主线程的委托
         public UpdateUI UpdateUIDelegate;
+
         public bool ShowVersionDesc { get; set; }
 
         private UpdateWork work;
@@ -28,15 +29,27 @@ namespace MAutoUpdate
                 this.updateBar.Value = obj;
             });
             work.OnUpdateProgess += new UpdateWork.UpdateProgess((obj) =>
-              {
-                  this.Invoke(UpdateUIDelegate, (int)obj);
-              });
+            {
+                this.Invoke(UpdateUIDelegate, (int)obj);
+            });
+
         }
 
         private void UpdateForm_Load(object sender, EventArgs e)
         {
             if (ShowVersionDesc)
-                this.lblContent.Text = work.UpdateVerList.LastOrDefault()?.GetVersionDesc();
+            {
+                work.OnUpdateVersionChanged += new UpdateWork.UpdateVersionChanged((data) =>
+                {
+                    this.Invoke((MethodInvoker)delegate
+                    {
+                        if (data == null)
+                            this.hideCursorRichTextBox1.Text = "";
+                        else
+                            this.hideCursorRichTextBox1.Text = data.GetVersionDesc();
+                    });
+                });
+            }
             ThreadPool.QueueUserWorkItem((obj) =>
             {
                 try
@@ -60,7 +73,10 @@ namespace MAutoUpdate
 
         private void Work_UpdateCompleted(object sender, EventArgs e)
         {
-            this.DialogResult = DialogResult.OK;
+            this.Invoke((MethodInvoker)delegate
+            {
+                this.DialogResult = DialogResult.OK;
+            });
         }
     }
 }

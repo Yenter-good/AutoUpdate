@@ -8,11 +8,12 @@ using System.Windows.Forms;
 using System.Threading;
 using System.Runtime.InteropServices;
 using Microsoft.Win32;
-using System.Xml;
 using Ionic.Zip;
 using System.Net.Security;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
+using System.Linq;
+using System.Runtime.Serialization.Json;
 
 namespace MAutoUpdate
 {
@@ -25,6 +26,9 @@ namespace MAutoUpdate
 
         public delegate void UpdateStateChanged(string data);
         public UpdateStateChanged OnUpdateStateChanged;
+
+        public delegate void UpdateVersionChanged(RemoteInfo data);
+        public UpdateVersionChanged OnUpdateVersionChanged;
 
         string mainName;
         //临时目录（WIN7以及以上在C盘只有对于temp目录有操作权限）
@@ -57,9 +61,11 @@ namespace MAutoUpdate
             {
                 tempinfo.Create();
             }
-            localInfo.LoadXml();
+            localInfo.LoadJson();
+            if (localInfo.LocalVersion == null)
+                return;
             UpdateVerList = GetServer(localInfo.ServerUpdateUrl);
-            CheckVer(localInfo.LocalVersion, localInfo.LocalIgnoreVersion, isClickUpdate);
+            CheckVer(isClickUpdate);
         }
 
         public bool Do()
@@ -79,7 +85,7 @@ namespace MAutoUpdate
         {
             var item = UpdateVerList[UpdateVerList.Count - 1];
             localInfo.LocalIgnoreVersion = item.ReleaseVersion;
-            localInfo.SaveXml();
+            localInfo.SaveJson();
         }
 
         /// <summary>
@@ -87,25 +93,27 @@ namespace MAutoUpdate
         /// </summary>
         /// <param name="url">自动更新的URL信息</param>
         /// <returns></returns>
-        private static List<RemoteInfo> GetServer(string url)
+        private List<RemoteInfo> GetServer(string url)
         {
             ServicePointManager.ServerCertificateValidationCallback += RemoteCertificateValidate;
-            List<RemoteInfo> list = new List<RemoteInfo>();
-            XmlReader xml = XmlReader.Create(url);
-            XmlDocument xdoc = new XmlDocument();
-            xdoc.Load(url);
-            var root = xdoc.DocumentElement;
-            var listNodes = root.SelectNodes("/ServerUpdate/item");
-            foreach (XmlNode item in listNodes)
+
+            DataContractJsonSerializer jsonSerializer = new DataContractJsonSerializer(typeof(List<RemoteInfo>));
+            List<RemoteInfo> remoteInfos = null;
+            try
             {
-                RemoteInfo remote = new RemoteInfo();
-                foreach (XmlNode pItem in item.ChildNodes)
-                {
-                    remote.GetType().GetProperty(pItem.Name)?.SetValue(remote, pItem.InnerText, null);
-                }
-                list.Add(remote);
+                var temp = WebRequest.Create(url);
+                using (var stream = temp.GetResponse().GetResponseStream())
+                    remoteInfos = jsonSerializer.ReadObject(stream) as List<RemoteInfo>;
             }
-            return list;
+            catch
+            {
+            }
+
+            if (remoteInfos == null)
+                remoteInfos = new List<RemoteInfo>();
+
+            return remoteInfos;
+
         }
         private static bool RemoteCertificateValidate(
               object sender, X509Certificate cert,
@@ -120,32 +128,35 @@ namespace MAutoUpdate
         /// </summary>
         private void DownLoad()
         {
-            //比如uri=http://localhost/Rabom/1.rar;iis就需要自己配置了。
-            //截取文件名
-            //构造文件完全限定名,准备将网络流下载为本地文件
-            OnUpdateStateChanged?.Invoke("正在下载...");
-            using (WebClient web = new WebClient())
-            {
-                web.DownloadProgressChanged += Web_DownloadProgressChanged;
-                web.DownloadFileCompleted += Web_DownloadFileCompleted;
-                foreach (var item in UpdateVerList)
-                {
-                    try
-                    {
-                        //LogTool.AddLog("更新程序：下载更新包文件" + item.ReleaseVersion);
-                        web.DownloadFileAsync(new Uri(item.ReleaseUrl), tempPath + item.ReleaseVersion + ".zip");
-                    }
-                    catch (Exception ex)
-                    {
-                        //LogTool.AddLog("更新程序：更新包文件" + item.ReleaseVersion + "下载失败,本次停止更新，异常信息：" + ex.Message);
-                        throw ex;
-                    }
-                }
-            }
-        }
+            var percentPerVersion = 80.0 / UpdateVerList.Count;
 
-        private void Web_DownloadFileCompleted(object sender, System.ComponentModel.AsyncCompletedEventArgs e)
-        {
+            int index = 0;
+            foreach (var item in UpdateVerList)
+            {
+                OnUpdateStateChanged?.Invoke($"正在下载 v{item.ReleaseVersion} ...");
+                OnUpdateVersionChanged?.Invoke(item);
+                var Myrq = (HttpWebRequest)HttpWebRequest.Create(item.ReleaseUrl);
+                var myrp = (HttpWebResponse)Myrq.GetResponse();
+                double totalBytes = myrp.ContentLength * 1.0, totalDownloadedByte = 0;
+                Stream st = myrp.GetResponseStream();
+                var so = new FileStream(tempPath + item.ReleaseVersion + ".zip", FileMode.Create);
+                byte[] by = new byte[10240];
+                int osize = st.Read(by, 0, by.Length);
+                while (osize > 0)
+                {
+                    totalDownloadedByte = osize + totalDownloadedByte;
+                    so.Write(by, 0, osize);
+                    osize = st.Read(by, 0, by.Length);
+
+                    OnUpdateProgess.Invoke(index * percentPerVersion + percentPerVersion * (totalDownloadedByte / totalBytes));
+                }
+                so.Close();
+                st.Close();
+                index++;
+            }
+
+            OnUpdateVersionChanged?.Invoke(null);
+
             //3、开始更新
             Update();
             Thread.Sleep(400);
@@ -154,15 +165,26 @@ namespace MAutoUpdate
             Thread.Sleep(400);
 
             UpdateCompleted?.Invoke(this, EventArgs.Empty);
+
+            //using (WebClient web = new WebClient())
+            //{
+            //    web.DownloadProgressChanged += Web_DownloadProgressChanged;
+            //    web.DownloadFileCompleted += Web_DownloadFileCompleted;
+            //    foreach (var item in UpdateVerList)
+            //    {
+            //        try
+            //        {
+            //            //LogTool.AddLog("更新程序：下载更新包文件" + item.ReleaseVersion);
+            //            web.DownloadFileAsync(new Uri(item.ReleaseUrl), tempPath + item.ReleaseVersion + ".zip");
+            //        }
+            //        catch (Exception ex)
+            //        {
+            //            //LogTool.AddLog("更新程序：更新包文件" + item.ReleaseVersion + "下载失败,本次停止更新，异常信息：" + ex.Message);
+            //            throw ex;
+            //        }
+            //    }
+            //}
         }
-
-        private void Web_DownloadProgressChanged(object sender, DownloadProgressChangedEventArgs e)
-        {
-            OnUpdateProgess?.Invoke(80 * (e.ProgressPercentage * 1.0 / 100));
-        }
-
-
-
 
         /// <summary>
         /// 备份当前的程序目录信息
@@ -202,9 +224,11 @@ namespace MAutoUpdate
 
         private UpdateWork Update()
         {
-            OnUpdateStateChanged?.Invoke("正在升级...");
+            int index = 1;
+            var percent = 18.0 / UpdateVerList.Count;
             foreach (var item in UpdateVerList)
             {
+                OnUpdateStateChanged?.Invoke($"正在升级 v{item.ReleaseVersion} ...");
                 try
                 {
                     //如果是覆盖安装的话，先删除原先的所有程序
@@ -220,9 +244,7 @@ namespace MAutoUpdate
                         //LogTool.AddLog("更新程序：" + item.ReleaseVersion + ".zip" + "解压完成");
                         ExecuteINI();//执行注册表等更新以及删除文件
                     }
-                    localInfo.LocalVersion = item.ReleaseVersion;
-                    localInfo.SaveXml();
-                    Application.DoEvents();
+
                 }
                 catch (Exception ex)
                 {
@@ -238,8 +260,13 @@ namespace MAutoUpdate
                     DelTempFile(item.ReleaseVersion + ".zip");//删除更新包
                     //LogTool.AddLog("更新程序：临时文件删除完成" + item.ReleaseVersion);
                 }
+                OnUpdateProgess?.Invoke(80 + index++ * percent);
             }
-            OnUpdateProgess?.Invoke(98);
+
+            localInfo.LocalVersion = UpdateVerList.Last().ReleaseVersion;
+            localInfo.SaveJson();
+            Application.DoEvents();
+
             return this;
         }
 
@@ -338,7 +365,7 @@ namespace MAutoUpdate
             {
                 if (item.Name != mainName)
                 {
-                    if (item.Name == "Local.xml")
+                    if (item.Name == "Local.json")
                     {
                     }
                     else
@@ -361,60 +388,13 @@ namespace MAutoUpdate
         /// </summary>
         /// <param name="LocalVer">当前本地版本信息</param>
         /// <returns></returns>
-        private UpdateWork CheckVer(string LocalVer, string localIgnoreVer, string isClickUpdate)
+        private UpdateWork CheckVer(string isClickUpdate)
         {
-            string[] Local = LocalVer.Split('.');
-            string[] LocalIgnore = localIgnoreVer.Split('.');
-            List<RemoteInfo> list = new List<RemoteInfo>();
-            List<RemoteInfo> listReal = new List<RemoteInfo>();
-            foreach (var item in UpdateVerList)
-            {
-                string[] Remote = item.ReleaseVersion.Split('.');
-                for (int i = 0; i < Local.Length; i++)
-                {
-                    if (int.Parse(Local[i]) < int.Parse(Remote[i]))
-                    {
-                        list.Add(item);
-                        break;
-                    }
-                    else if (int.Parse(Local[i]) == int.Parse(Remote[i]))
-                    {
-                        continue;
-                    }
-                    else
-                    {
-                        break;
-                    }
-                }
-            }
-            if (isClickUpdate == "0")
-            {
-                foreach (var item in list)
-                {
-                    string[] Remote = item.ReleaseVersion.Split('.');
-                    for (int i = 0; i < LocalIgnore.Length; i++)
-                    {
-                        if (int.Parse(LocalIgnore[i]) < int.Parse(Remote[i]))
-                        {
-                            listReal.Add(item);
-                            break;
-                        }
-                        else if (int.Parse(LocalIgnore[i]) == int.Parse(Remote[i]))
-                        {
-                            continue;
-                        }
-                        else
-                        {
-                            break;
-                        }
-                    }
-                }
-            }
-            else
-            {
-                listReal = list;
-            }
-            UpdateVerList = listReal;
+            var localVer = localInfo.AbsoluteValue;
+            var localIgnoreVer = localInfo.IgnoreAbsoluteValue;
+
+            UpdateVerList = UpdateVerList.Where(p => p.AbsoluteValue != localIgnoreVer && p.AbsoluteValue > localVer).OrderBy(p => p.AbsoluteValue).ToList();
+
             return this;
         }
 

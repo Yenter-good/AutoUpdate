@@ -15,7 +15,7 @@ namespace UpdateHelper
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new FormSelectFile(args));
+            Application.Run(new FormMain(args));
         }
     }
 }

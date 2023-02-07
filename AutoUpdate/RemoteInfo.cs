@@ -26,9 +26,21 @@ namespace MAutoUpdate
         {
             var temp = WebRequest.Create(VersionDesc);
             var stream = temp.GetResponse().GetResponseStream();
-            using (StreamReader reader = new StreamReader(stream, System.Text.Encoding.Default))
-            {
+            using (StreamReader reader = new StreamReader(stream, Encoding.GetEncoding("GBK")))
                 return reader.ReadToEnd();
+        }
+
+        public int AbsoluteValue
+        {
+            get
+            {
+                var version = ReleaseVersion.Split('.');
+                var ver1 = Convert.ToInt32(version[0]);
+                var ver2 = Convert.ToInt32(version[1]);
+                var ver3 = Convert.ToInt32(version[2]);
+                var ver4 = Convert.ToInt32(version[3]);
+
+                return ver1 * 1000 + ver2 * 100 + ver3 * 10 + ver4;
             }
         }
     }

@@ -1,6 +1,6 @@
 ﻿namespace UpdateHelper
 {
-    partial class Form1
+    partial class FormMain
     {
         /// <summary>
         /// 必需的设计器变量。
@@ -37,10 +37,11 @@
             this.label5 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
-            this.textBox1 = new System.Windows.Forms.TextBox();
-            this.checkBox1 = new System.Windows.Forms.CheckBox();
-            this.button1 = new System.Windows.Forms.Button();
-            this.checkBox2 = new System.Windows.Forms.CheckBox();
+            this.tbxVersionDescription = new System.Windows.Forms.TextBox();
+            this.cbxForceUpdate = new System.Windows.Forms.CheckBox();
+            this.btnOK = new System.Windows.Forms.Button();
+            this.cbxDirectUpdate = new System.Windows.Forms.CheckBox();
+            this.lvVersion = new System.Windows.Forms.ListView();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown3)).BeginInit();
@@ -50,36 +51,40 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(37, 28);
+            this.label2.Location = new System.Drawing.Point(181, 30);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(84, 14);
+            this.label2.Size = new System.Drawing.Size(56, 14);
             this.label2.TabIndex = 0;
-            this.label2.Text = "更新版本号:";
+            this.label2.Text = "版本号:";
             // 
             // numericUpDown1
             // 
-            this.numericUpDown1.Location = new System.Drawing.Point(127, 26);
+            this.numericUpDown1.Enabled = false;
+            this.numericUpDown1.Location = new System.Drawing.Point(243, 28);
             this.numericUpDown1.Name = "numericUpDown1";
             this.numericUpDown1.Size = new System.Drawing.Size(35, 23);
             this.numericUpDown1.TabIndex = 1;
             // 
             // numericUpDown2
             // 
-            this.numericUpDown2.Location = new System.Drawing.Point(168, 26);
+            this.numericUpDown2.Enabled = false;
+            this.numericUpDown2.Location = new System.Drawing.Point(284, 28);
             this.numericUpDown2.Name = "numericUpDown2";
             this.numericUpDown2.Size = new System.Drawing.Size(35, 23);
             this.numericUpDown2.TabIndex = 1;
             // 
             // numericUpDown3
             // 
-            this.numericUpDown3.Location = new System.Drawing.Point(209, 26);
+            this.numericUpDown3.Enabled = false;
+            this.numericUpDown3.Location = new System.Drawing.Point(325, 28);
             this.numericUpDown3.Name = "numericUpDown3";
             this.numericUpDown3.Size = new System.Drawing.Size(35, 23);
             this.numericUpDown3.TabIndex = 1;
             // 
             // numericUpDown4
             // 
-            this.numericUpDown4.Location = new System.Drawing.Point(250, 26);
+            this.numericUpDown4.Enabled = false;
+            this.numericUpDown4.Location = new System.Drawing.Point(366, 28);
             this.numericUpDown4.Name = "numericUpDown4";
             this.numericUpDown4.Size = new System.Drawing.Size(35, 23);
             this.numericUpDown4.TabIndex = 1;
@@ -87,7 +92,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(160, 34);
+            this.label3.Location = new System.Drawing.Point(276, 36);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(14, 14);
             this.label3.TabIndex = 2;
@@ -96,7 +101,7 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(201, 35);
+            this.label5.Location = new System.Drawing.Point(317, 37);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(14, 14);
             this.label5.TabIndex = 4;
@@ -105,7 +110,7 @@
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(242, 35);
+            this.label6.Location = new System.Drawing.Point(358, 37);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(14, 14);
             this.label6.TabIndex = 5;
@@ -114,64 +119,81 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(51, 60);
+            this.label4.Location = new System.Drawing.Point(167, 62);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(70, 14);
             this.label4.TabIndex = 0;
             this.label4.Text = "更新文本:";
             // 
-            // textBox1
+            // tbxVersionDescription
             // 
-            this.textBox1.Location = new System.Drawing.Point(127, 57);
-            this.textBox1.Multiline = true;
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(326, 139);
-            this.textBox1.TabIndex = 6;
+            this.tbxVersionDescription.Enabled = false;
+            this.tbxVersionDescription.Location = new System.Drawing.Point(243, 59);
+            this.tbxVersionDescription.Multiline = true;
+            this.tbxVersionDescription.Name = "tbxVersionDescription";
+            this.tbxVersionDescription.Size = new System.Drawing.Size(326, 139);
+            this.tbxVersionDescription.TabIndex = 6;
             // 
-            // checkBox1
+            // cbxForceUpdate
             // 
-            this.checkBox1.AutoSize = true;
-            this.checkBox1.Checked = true;
-            this.checkBox1.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBox1.Enabled = false;
-            this.checkBox1.Location = new System.Drawing.Point(126, 202);
-            this.checkBox1.Name = "checkBox1";
-            this.checkBox1.Size = new System.Drawing.Size(82, 18);
-            this.checkBox1.TabIndex = 7;
-            this.checkBox1.Text = "强制更新";
-            this.checkBox1.UseVisualStyleBackColor = true;
+            this.cbxForceUpdate.AutoSize = true;
+            this.cbxForceUpdate.Checked = true;
+            this.cbxForceUpdate.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.cbxForceUpdate.Enabled = false;
+            this.cbxForceUpdate.Location = new System.Drawing.Point(242, 204);
+            this.cbxForceUpdate.Name = "cbxForceUpdate";
+            this.cbxForceUpdate.Size = new System.Drawing.Size(82, 18);
+            this.cbxForceUpdate.TabIndex = 7;
+            this.cbxForceUpdate.Text = "强制更新";
+            this.cbxForceUpdate.UseVisualStyleBackColor = true;
             // 
-            // button1
+            // btnOK
             // 
-            this.button1.Location = new System.Drawing.Point(378, 231);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 23);
-            this.button1.TabIndex = 8;
-            this.button1.Text = "确定";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.btnOK.Location = new System.Drawing.Point(478, 233);
+            this.btnOK.Name = "btnOK";
+            this.btnOK.Size = new System.Drawing.Size(91, 23);
+            this.btnOK.TabIndex = 8;
+            this.btnOK.Text = "增加新版本";
+            this.btnOK.UseVisualStyleBackColor = true;
+            this.btnOK.Click += new System.EventHandler(this.btnOK_Click);
             // 
-            // checkBox2
+            // cbxDirectUpdate
             // 
-            this.checkBox2.AutoSize = true;
-            this.checkBox2.Checked = true;
-            this.checkBox2.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBox2.Location = new System.Drawing.Point(227, 202);
-            this.checkBox2.Name = "checkBox2";
-            this.checkBox2.Size = new System.Drawing.Size(82, 18);
-            this.checkBox2.TabIndex = 7;
-            this.checkBox2.Text = "直接更新";
-            this.checkBox2.UseVisualStyleBackColor = true;
+            this.cbxDirectUpdate.AutoSize = true;
+            this.cbxDirectUpdate.Checked = true;
+            this.cbxDirectUpdate.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.cbxDirectUpdate.Enabled = false;
+            this.cbxDirectUpdate.Location = new System.Drawing.Point(343, 204);
+            this.cbxDirectUpdate.Name = "cbxDirectUpdate";
+            this.cbxDirectUpdate.Size = new System.Drawing.Size(82, 18);
+            this.cbxDirectUpdate.TabIndex = 7;
+            this.cbxDirectUpdate.Text = "直接更新";
+            this.cbxDirectUpdate.UseVisualStyleBackColor = true;
             // 
-            // Form1
+            // lvVersion
+            // 
+            this.lvVersion.Dock = System.Windows.Forms.DockStyle.Left;
+            this.lvVersion.FullRowSelect = true;
+            this.lvVersion.HideSelection = false;
+            this.lvVersion.Location = new System.Drawing.Point(0, 0);
+            this.lvVersion.MultiSelect = false;
+            this.lvVersion.Name = "lvVersion";
+            this.lvVersion.Size = new System.Drawing.Size(134, 284);
+            this.lvVersion.TabIndex = 9;
+            this.lvVersion.UseCompatibleStateImageBehavior = false;
+            this.lvVersion.View = System.Windows.Forms.View.List;
+            this.lvVersion.SelectedIndexChanged += new System.EventHandler(this.lvVersion_SelectedIndexChanged);
+            // 
+            // FormMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 14F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(487, 292);
-            this.Controls.Add(this.button1);
-            this.Controls.Add(this.checkBox2);
-            this.Controls.Add(this.checkBox1);
-            this.Controls.Add(this.textBox1);
+            this.ClientSize = new System.Drawing.Size(615, 284);
+            this.Controls.Add(this.lvVersion);
+            this.Controls.Add(this.btnOK);
+            this.Controls.Add(this.cbxDirectUpdate);
+            this.Controls.Add(this.cbxForceUpdate);
+            this.Controls.Add(this.tbxVersionDescription);
             this.Controls.Add(this.numericUpDown1);
             this.Controls.Add(this.numericUpDown4);
             this.Controls.Add(this.numericUpDown3);
@@ -186,9 +208,9 @@
             this.Margin = new System.Windows.Forms.Padding(4);
             this.MaximizeBox = false;
             this.MinimizeBox = false;
-            this.Name = "Form1";
+            this.Name = "FormMain";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Form1";
+            this.Text = "版本管理";
             this.Shown += new System.EventHandler(this.Form1_Shown);
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown2)).EndInit();
@@ -209,10 +231,11 @@
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.TextBox textBox1;
-        private System.Windows.Forms.CheckBox checkBox1;
-        private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.CheckBox checkBox2;
+        private System.Windows.Forms.TextBox tbxVersionDescription;
+        private System.Windows.Forms.CheckBox cbxForceUpdate;
+        private System.Windows.Forms.Button btnOK;
+        private System.Windows.Forms.CheckBox cbxDirectUpdate;
+        private System.Windows.Forms.ListView lvVersion;
     }
 }
 

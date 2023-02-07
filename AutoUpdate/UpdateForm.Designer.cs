@@ -31,7 +31,7 @@
             this.updateBar = new System.Windows.Forms.ProgressBar();
             this.LBTitle = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
-            this.lblContent = new System.Windows.Forms.Label();
+            this.hideCursorRichTextBox1 = new MAutoUpdate.HideCursorRichTextBox();
             this.SuspendLayout();
             // 
             // updateBar
@@ -66,21 +66,24 @@
             this.label1.Text = "正在升级...";
             this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
-            // lblContent
+            // hideCursorRichTextBox1
             // 
-            this.lblContent.Font = new System.Drawing.Font("微软雅黑", 11F);
-            this.lblContent.ForeColor = System.Drawing.Color.DimGray;
-            this.lblContent.Location = new System.Drawing.Point(115, 59);
-            this.lblContent.Name = "lblContent";
-            this.lblContent.Size = new System.Drawing.Size(358, 159);
-            this.lblContent.TabIndex = 27;
+            this.hideCursorRichTextBox1.BackColor = System.Drawing.SystemColors.Control;
+            this.hideCursorRichTextBox1.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.hideCursorRichTextBox1.Font = new System.Drawing.Font("宋体", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.hideCursorRichTextBox1.Location = new System.Drawing.Point(108, 59);
+            this.hideCursorRichTextBox1.Name = "hideCursorRichTextBox1";
+            this.hideCursorRichTextBox1.ReadOnly = true;
+            this.hideCursorRichTextBox1.Size = new System.Drawing.Size(373, 159);
+            this.hideCursorRichTextBox1.TabIndex = 30;
+            this.hideCursorRichTextBox1.Text = "";
             // 
             // UpdateForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(588, 428);
-            this.Controls.Add(this.lblContent);
+            this.Controls.Add(this.hideCursorRichTextBox1);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.LBTitle);
             this.Controls.Add(this.updateBar);
@@ -99,6 +102,6 @@
         private System.Windows.Forms.ProgressBar updateBar;
         private System.Windows.Forms.Label LBTitle;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Label lblContent;
+        private HideCursorRichTextBox hideCursorRichTextBox1;
     }
 }
