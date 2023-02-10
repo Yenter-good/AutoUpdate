@@ -27,7 +27,7 @@ namespace MAutoUpdate
         public delegate void UpdateStateChanged(string data);
         public UpdateStateChanged OnUpdateStateChanged;
 
-        public delegate void UpdateVersionChanged(RemoteInfo data);
+        public delegate void UpdateVersionChanged(string data);
         public UpdateVersionChanged OnUpdateVersionChanged;
 
         string mainName;
@@ -134,7 +134,7 @@ namespace MAutoUpdate
             foreach (var item in UpdateVerList)
             {
                 OnUpdateStateChanged?.Invoke($"正在下载 v{item.ReleaseVersion} ...");
-                OnUpdateVersionChanged?.Invoke(item);
+                OnUpdateVersionChanged?.Invoke(item.GetVersionDesc());
                 var Myrq = (HttpWebRequest)HttpWebRequest.Create(item.ReleaseUrl);
                 var myrp = (HttpWebResponse)Myrq.GetResponse();
                 double totalBytes = myrp.ContentLength * 1.0, totalDownloadedByte = 0;
@@ -155,7 +155,6 @@ namespace MAutoUpdate
                 index++;
             }
 
-            OnUpdateVersionChanged?.Invoke(null);
 
             //3、开始更新
             Update();
@@ -229,6 +228,7 @@ namespace MAutoUpdate
             foreach (var item in UpdateVerList)
             {
                 OnUpdateStateChanged?.Invoke($"正在升级 v{item.ReleaseVersion} ...");
+                OnUpdateVersionChanged?.Invoke($"正在升级 请耐心等待...");
                 try
                 {
                     //如果是覆盖安装的话，先删除原先的所有程序

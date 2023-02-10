@@ -46,7 +46,7 @@ namespace MAutoUpdate
                         if (data == null)
                             this.hideCursorRichTextBox1.Text = "";
                         else
-                            this.hideCursorRichTextBox1.Text = data.GetVersionDesc();
+                            this.hideCursorRichTextBox1.Text = data;
                     });
                 });
             }

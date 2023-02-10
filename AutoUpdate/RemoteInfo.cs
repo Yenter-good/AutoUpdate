@@ -40,7 +40,7 @@ namespace MAutoUpdate
                 var ver3 = Convert.ToInt32(version[2]);
                 var ver4 = Convert.ToInt32(version[3]);
 
-                return ver1 * 1000 + ver2 * 100 + ver3 * 10 + ver4;
+                return ver1 * 100000000 + ver2 * 100000 + ver3 * 100 + ver4 / 10;
             }
         }
     }

@@ -124,18 +124,23 @@ namespace UpdateHelper
         {
             var version = $"{this.numericUpDown1.Value}.{this.numericUpDown2.Value}.{this.numericUpDown3.Value}.{this.numericUpDown4.Value}";
 
-            var versionValue = this.numericUpDown1.Value * 1000 + this.numericUpDown2.Value * 100 + this.numericUpDown3.Value * 10 + this.numericUpDown4.Value;
-
-            if (_latestVersion != null && versionValue <= _latestVersion.AbsoluteValue)
-            {
-                MessageBox.Show("版本号不能小于等于上一个版本号");
-                return;
-            }
-
             var forceFlag = this.cbxForceUpdate.Checked ? "1" : "0";
             var directUpdate = this.cbxDirectUpdate.Checked ? "1" : "0";
 
-            var remoteInfo = _buildVersion.Handler(_zipFileName, version, this.tbxVersionDescription.Text, forceFlag, directUpdate);
+            var remoteInfo = new RemoteInfo()
+            {
+                ReleaseVersion = version,
+                DirectUpdate = directUpdate,
+                ForceFlag = forceFlag
+            };
+
+            if (_remoteInfos.Any(p => p.ReleaseVersion == version))
+            {
+                MessageBox.Show("版本号不能和历史版本重复");
+                return;
+            }
+
+            remoteInfo = _buildVersion.Handler(_zipFileName, this.tbxVersionDescription.Text, remoteInfo);
             _remoteInfos.Add(remoteInfo);
 
             var listviewItem = new ListViewItem($"{version}");

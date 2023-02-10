@@ -14,10 +14,10 @@ namespace UpdateHelper
         private Uri _releaseUri;
         private string _startApplicationName;
 
-        public RemoteInfo Handler(string fileName, string version, string desc, string forceFlag, string directUpdate)
+        public RemoteInfo Handler(string fileName, string desc, RemoteInfo remoteInfo)
         {
             this.InitConfig();
-            return this.CreateNewFile(fileName, version, desc, forceFlag, directUpdate);
+            return this.CreateNewFile(fileName, desc, remoteInfo);
         }
 
         private void InitConfig()
@@ -46,19 +46,19 @@ namespace UpdateHelper
 
         }
 
-        private RemoteInfo CreateNewFile(string fileName, string version, string desc, string forceFlag, string directUpdate)
+        private RemoteInfo CreateNewFile(string fileName, string desc, RemoteInfo remoteInfo)
         {
-            var verFolder = Path.Combine(_workDir, version);
+            var verFolder = Path.Combine(_workDir, remoteInfo.ReleaseVersion);
             if (!Directory.Exists(verFolder))
                 Directory.CreateDirectory(verFolder);
 
-            File.Move(fileName, Path.Combine(_workDir, version, "最新版本.zip"));
-            File.WriteAllText(Path.Combine(_workDir, version, "最新版本更新说明.txt"), desc, Encoding.GetEncoding("GBK"));
+            File.Move(fileName, Path.Combine(_workDir, remoteInfo.ReleaseVersion, "最新版本.zip"));
+            File.WriteAllText(Path.Combine(_workDir, remoteInfo.ReleaseVersion, "最新版本更新说明.txt"), desc, Encoding.GetEncoding("GBK"));
 
-            return this.EditServer(version, desc, forceFlag, directUpdate);
+            return this.EditServer(remoteInfo);
         }
 
-        private RemoteInfo EditServer(string version, string desc, string forceFlag, string directUpdate)
+        private RemoteInfo EditServer(RemoteInfo remoteInfo)
         {
             DataContractJsonSerializer jsonSerializer = new DataContractJsonSerializer(typeof(List<RemoteInfo>));
             List<RemoteInfo> remoteInfos = null;
@@ -74,18 +74,11 @@ namespace UpdateHelper
             if (remoteInfos == null)
                 remoteInfos = new List<RemoteInfo>();
 
-            var newRemoteInfo = new RemoteInfo()
-            {
-                ApplicationStart = _startApplicationName,
-                DirectUpdate = directUpdate,
-                ForceFlag = forceFlag,
-                ReleaseUrl = new Uri(_releaseUri, $"{version}/最新版本.zip").OriginalString,
-                ReleaseVersion = version,
-                UpdateMode = "Increment",
-                VersionDesc = new Uri(_releaseUri, $"{version}/最新版本更新说明.txt").OriginalString,
-            };
+            remoteInfo.ApplicationStart = _startApplicationName;
+            remoteInfo.ReleaseUrl = new Uri(_releaseUri, $"{remoteInfo.ReleaseVersion}/最新版本.zip").OriginalString;
+            remoteInfo.VersionDesc = new Uri(_releaseUri, $"{remoteInfo.ReleaseVersion}/最新版本更新说明.txt").OriginalString;
 
-            remoteInfos.Add(newRemoteInfo);
+            remoteInfos.Add(remoteInfo);
 
             string json;
             using (MemoryStream ms = new MemoryStream())
@@ -96,7 +89,7 @@ namespace UpdateHelper
 
             File.WriteAllText(Path.Combine(_workDir, "Server.json"), json, new UTF8Encoding(false));
 
-            return newRemoteInfo;
+            return remoteInfo;
         }
     }
 }

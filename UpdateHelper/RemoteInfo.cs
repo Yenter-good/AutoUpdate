@@ -40,17 +40,17 @@ namespace UpdateHelper
 
         }
 
-        public int AbsoluteValue
+        public decimal AbsoluteValue
         {
             get
             {
                 var version = ReleaseVersion.Split('.');
-                var ver1 = Convert.ToInt32(version[0]);
-                var ver2 = Convert.ToInt32(version[1]);
-                var ver3 = Convert.ToInt32(version[2]);
-                var ver4 = Convert.ToInt32(version[3]);
+                var ver1 = Convert.ToDecimal(version[0]);
+                var ver2 = Convert.ToDecimal(version[1]);
+                var ver3 = Convert.ToDecimal(version[2]);
+                var ver4 = Convert.ToDecimal(version[3]);
 
-                return ver1 * 1000 + ver2 * 100 + ver3 * 10 + ver4;
+                return ver1 * 100000000 + ver2 * 100000 + ver3 * 100 + ver4 / 10;
             }
         }
     }
